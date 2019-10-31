@@ -1,0 +1,10 @@
+label[for="photo"]{
+    cursor: pointer;
+    display: inline;
+    padding: 11px 16px;
+    margin: 2em 0 !important;
+    background: #007bff;
+    color: #fff;
+    font-weight: bolder;
+    border-radius: 10px;
+}
