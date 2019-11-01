@@ -1,10 +1,17 @@
-label[for="photo"]{
+/* label[for="photo"]{
     cursor: pointer;
-    display: inline;
+    display: inline-block;
     padding: 11px 16px;
     margin: 2em 0 !important;
     background: #007bff;
     color: #fff;
     font-weight: bolder;
     border-radius: 10px;
+}
+input#photo{
+    display: none !important;
+} */
+
+label{
+    display: block;
 }
