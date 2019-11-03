@@ -10,8 +10,12 @@ def home(request):
 
 def photo_list(request):
     photos = Photo.objects.all()
-    form = PhotoForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('photo_list')
+    print(photos)
+    if request.method == 'POST':
+        form = PhotoForm(request.POST , request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('photo_list')
+    else:
+        form = PhotoForm()
     return render(request, 'images/photo_list.html', {'form': form, 'photos': photos})

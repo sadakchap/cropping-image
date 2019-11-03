@@ -1,68 +1,111 @@
 {% extends 'base.html' %}
-{% block js %}
-    <script>
-        $(function(){
-            $('#photo').change(function(){
-                alert('fvbnj');
-
-            });
-
-            var image = $("#image");
-
-            $(".js-crop-and-upload").click(function () {
-                // ...
-            });
-        });
-    </script>
-{% endblock %}
+{% load static %}
 {% block content %}
     <div class="container">
         <h2>Upload File</h2>
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" id="photoform">
             {% csrf_token %}
-            {{ form }}
-            <div class="form-group my-2">
-                <button class="btn btn-dark" type="submit">Upload</button>
-            </div>
-            
+            {{ form }}          
         </form>
     </div>
     
     <!-- MODAL TO CROP THE IMAGE -->
-    <div class="modal fade" id="modalCrop">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-              <h4 class="modal-title">Crop the photo</h4>
-            </div>
-            <div class="modal-body">
-              <img src="" id="image" style="max-width: 100%;">
-            </div>
-            <div class="modal-footer">
-              <div class="btn-group pull-left" role="group">
-                <button type="button" class="btn btn-default js-zoom-in">
-                  <span class="glyphicon glyphicon-zoom-in"></span>
-                </button>
-                <button type="button" class="btn btn-default js-zoom-out">
-                  <span class="glyphicon glyphicon-zoom-out"></span>
-                </button>
-              </div>
-              <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
-              <button type="button" class="btn btn-primary js-crop-and-upload">Crop and upload</button>
-            </div>
-          </div>
-        </div>
-    </div>
+    <div class="modal" id="modalCrop">
+      <div class="modal-dialog">
+        <div class="modal-content">
     
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Crop the photo</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+    
+          <!-- Modal body -->
+          <div class="modal-body">
+            <img src="" id="image" style="max-width: 100%;">
+          </div>
+    
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default js-zoom-in">
+              <span class="glyphicon glyphicon-zoom-in"></span>+
+            </button>
+            <button type="button" class="btn btn-default js-zoom-out">
+              <span class="glyphicon glyphicon-zoom-out"></span>-
+            </button>
+            <button type="button" class="btn btn-primary js-crop-and-upload">Save</button>
+          </div>
+    
+        </div>
+      </div>
+    </div>
     <!-- CONTAINER TO DISPLAY THE CROPPED IMAGES -->
-    <div class="row" style="margin-top: 20px">
+    <div class="container">
+      <div class="row" style="margin-top: 20px">
         {% for photo in photos %}
             <div class="col-sm-4 col-md-3">
-            <img src="{{ photo.file.url }}" class="thumbnail">
+            <img src="{{ photo.image.url }}" class="img-thumbnail" title="{{ photo.image.name }}">
             </div>
         {% endfor %}
+      </div>
     </div>
+    
 {% endblock %}
+
+{% block js %}
+    <script>
+        $(function(){
+            $('#photo').change(function(){
+              if (this.files && this.files[0]){
+                var reader = new FileReader();
+                reader.addEventListener('load', function(e){
+                  $("#image").attr('src', e.target.result);
+                  $("#modalCrop").modal("show");
+                });
+                reader.readAsDataURL(this.files[0]);
+              }
+            });
+
+            const img = document.getElementById('image');
+            let cropper;
+            let cropBoxData;
+            let canvasData;
+            $('#modalCrop').on('shown.bs.modal', function(){
+              
+              cropper = new Cropper(img,{
+                aspectRatio: 1/1,
+                maxCropBoxWidth: 200,
+                maxCropBoxHeight: 200,
+              });   
+            })
+            // .on("hidden.bs.model", function(){
+            //   // cropBoxData = cropper.crop("getCropBoxData");
+            //   // canvasData = cropper.crop("getCanvasData");
+            //   cropper.destroy();
+            // });
+            
+            $(".js-zoom-in").click(function () {
+              cropper.zoom(0.1);
+            });
+            $(".js-zoom-out").click(function () {
+              cropper.zoom(-0.1);              
+            });
+
+            $(".js-crop-and-upload").click(function () {
+              var cropData = cropper.getData();
+              console.log('cropData');
+              $("#x_Input").val(cropData["x"]);
+              $("#y_Input").val(cropData["y"]);
+              $("#width_Input").val(cropData["height"]);
+              $("#height_Input").val(cropData["width"]);
+              $("#photoform").submit();
+            });
+        });
+    </script>
+{% endblock %}
+
+<!-- 
+todo
+1. fix css
+2. change picture
+3. max and min size -->

@@ -21,7 +21,7 @@ class PhotoForm(forms.ModelForm):
         w = self.cleaned_data.get('width')
         h = self.cleaned_data.get('height')
         image = Image.open(photo.image)
-        cropped_image = image.crop(x,y,w+x, h+y)
+        cropped_image = image.crop((x,y,w+x, h+y))
         resized_image = cropped_image.resize((200, 200), Image.ANTIALIAS)
         if commit:
             photo.save()
