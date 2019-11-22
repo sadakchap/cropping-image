@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+
+    <!-- see preview -->
+    <div class="container">
+      <h2 class="display-4">Preview Image Here.</h2>
+      <div class="img-preview" style="overflow: hidden; width: 100px; height: 100px;"></div>
+    </div>
     <div class="container">
         <h2>Upload File</h2>
         <form method="post" enctype="multipart/form-data" id="photoform">
@@ -49,6 +55,8 @@
         {% endfor %}
       </div>
     </div>
+
+    
     
 {% endblock %}
 
@@ -74,15 +82,13 @@
               
               cropper = new Cropper(img,{
                 aspectRatio: 1/1,
-                maxCropBoxWidth: 200,
-                maxCropBoxHeight: 200,
+                preview: '.img-preview',
               });   
-            })
-            // .on("hidden.bs.model", function(){
-            //   // cropBoxData = cropper.crop("getCropBoxData");
-            //   // canvasData = cropper.crop("getCanvasData");
-            //   cropper.destroy();
-            // });
+            }).on("hidden.bs.modal", function(){
+              // cropBoxData = cropper.crop("getCropBoxData");
+              // canvasData = cropper.crop("getCanvasData");
+              cropper.destroy();
+            });
             
             $(".js-zoom-in").click(function () {
               cropper.zoom(0.1);
